@@ -1,6 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:meadowkart_task/features/carts/presentation/carts_view.dart';
-import 'package:meadowkart_task/features/checkout/presentation/checkout_view.dart';
+//import 'package:meadowkart_task/features/checkout/presentation/checkout_view.dart';
 import 'package:meadowkart_task/features/product_details/presentation/products_details_view.dart';
 import 'package:meadowkart_task/features/products/domain/entity/product_entity.dart';
 import 'package:meadowkart_task/features/products/presentation/prodcuts_view.dart';
@@ -39,11 +39,11 @@ class RouteManager {
         path: cartPath,
         builder: (context, state) => const CartsView(),
         routes: [
-          GoRoute(
-            name: checkoutName,
-            path: checkoutPath,
-            builder: (context, state) => const CheckoutView(),
-          ),
+          // GoRoute(
+          //   name: checkoutName,
+          //   path: checkoutPath,
+          //   builder: (context, state) => const CheckoutView(),
+          // ),
         ],
       ),
     ],

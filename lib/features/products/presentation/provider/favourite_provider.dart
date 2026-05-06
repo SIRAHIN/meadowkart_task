@@ -22,6 +22,4 @@ class FavouriteNotifier extends Notifier<Set<int>> {
     await ds.toggleFavourite(ProductFavouriteModel(productId: productId));
     state = ds.getFavouriteProducts().map((e) => e.productId).toSet();
   }
-
-  bool isFavourite(int productId) => state.contains(productId);
 }
