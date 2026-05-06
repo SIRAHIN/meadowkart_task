@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:meadowkart_task/core/router/router_manager.dart';
+import 'package:meadowkart_task/features/carts/presentation/provider/cart_provider.dart';
 import 'package:meadowkart_task/features/products/domain/entity/product_entity.dart';
 import 'package:meadowkart_task/features/products/presentation/provider/favourite_provider.dart';
 import 'package:meadowkart_task/features/products/presentation/provider/fetch_products_provider.dart';
@@ -31,9 +34,37 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
         title: const Text('Products'),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.shopping_cart_outlined),
-            onPressed: () {},
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.shopping_cart_outlined),
+                onPressed: () => context.push(cartPath),
+              ),
+              Positioned(
+                right: 4.w,
+                top: 4.h,
+                child: Consumer(
+                  builder: (context, ref, _) {
+                    final count = ref.watch(cartProvider).fold<int>(
+                          0,
+                          (sum, item) => sum + item.quantity,
+                        );
+                    if (count == 0) return const SizedBox.shrink();
+                    return CircleAvatar(
+                      radius: 8.r,
+                      backgroundColor: Colors.red,
+                      child: Text(
+                        '$count',
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          color: Colors.white,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -141,7 +172,12 @@ class _ProductCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isFav = ref.watch(favouriteProvider).contains(product.id);
 
-    return Card(
+    return GestureDetector(
+      onTap: () => context.push(
+        '$productsViewPath/$productDetailsPath',
+        extra: product,
+      ),
+      child: Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.r),
@@ -236,6 +272,7 @@ class _ProductCard extends ConsumerWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }

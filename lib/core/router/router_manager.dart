@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:meadowkart_task/features/carts/presentation/carts_view.dart';
 import 'package:meadowkart_task/features/checkout/presentation/checkout_view.dart';
 import 'package:meadowkart_task/features/product_details/presentation/products_details_view.dart';
+import 'package:meadowkart_task/features/products/domain/entity/product_entity.dart';
 import 'package:meadowkart_task/features/products/presentation/prodcuts_view.dart';
 import 'package:meadowkart_task/features/splash/presentation/splash_view.dart';
 
@@ -24,12 +25,15 @@ class RouteManager {
           GoRoute(
             name: productDetailsName,
             path: productDetailsPath,
-            builder: (context, state) => const ProductsDetailsView(),
+            builder: (context, state) {
+              final product = state.extra as ProductEntity;
+              return ProductsDetailsView(product: product);
+            },
           ),
         ],
       ),
 
-      // Cart View nested routes is checkout view 
+      // Cart View nested routes is checkout view
       GoRoute(
         name: cartName,
         path: cartPath,
@@ -56,6 +60,6 @@ const String checkoutPath = 'checkoutPath';
 // Routes Names
 const String splashViewName = 'splashView';
 const String productsViewName = 'productsView';
-const String productDetailsName = 'productDetailsView';
+const String productDetailsName = 'productsDetailsView';
 const String cartName = 'cartView';
 const String checkoutName = 'checkoutView';
