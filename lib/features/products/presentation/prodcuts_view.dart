@@ -4,10 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meadowkart_task/core/router/router_manager.dart';
 import 'package:meadowkart_task/features/carts/presentation/provider/cart_provider.dart';
-import 'package:meadowkart_task/features/products/domain/entity/product_entity.dart';
-import 'package:meadowkart_task/features/products/presentation/provider/favourite_provider.dart';
 import 'package:meadowkart_task/features/products/presentation/provider/fetch_products_provider.dart';
 import 'package:meadowkart_task/features/products/presentation/provider/search_products_provider.dart';
+import 'package:meadowkart_task/features/products/presentation/widget/product_card.dart';
 
 class ProductsView extends ConsumerStatefulWidget {
   const ProductsView({super.key});
@@ -30,14 +29,15 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
     final filteredProducts = ref.watch(searchProductsProvider);
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Products'),
+        title: const Text('Discover'),
         centerTitle: true,
         actions: [
           Stack(
             children: [
               IconButton(
-                icon: const Icon(Icons.shopping_cart_outlined),
+                icon: const Icon(Icons.shopping_bag_outlined),
                 onPressed: () => context.push(cartPath),
               ),
               Positioned(
@@ -50,14 +50,20 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
                           (sum, item) => sum + item.quantity,
                         );
                     if (count == 0) return const SizedBox.shrink();
-                    return CircleAvatar(
-                      radius: 8.r,
-                      backgroundColor: Colors.red,
+                    return Container(
+                      padding: EdgeInsets.all(2.r),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade400,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: BoxConstraints(minWidth: 16.r, minHeight: 16.r),
                       child: Text(
                         '$count',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 10.sp,
+                          fontSize: 9.sp,
                           color: Colors.white,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     );
@@ -68,211 +74,176 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Search bar
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (value) {
-                ref.read(searchProductsProvider.notifier).searchProducts(value);
-              },
-              decoration: InputDecoration(
-                hintText: 'Search products...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                         ref.read(searchProductsProvider.notifier).searchProducts('');
-                        },
-                      )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Colors.grey.shade200,
-                contentPadding: EdgeInsets.symmetric(vertical: 12.h),
-              ),
-            ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF6750A4),
+              Color(0xFF7E57C2),
+              Color(0xFFB39DDB),
+              Color(0xFFF5F3FF),
+            ],
+            stops: [0.0, 0.15, 0.3, 0.45],
           ),
-          // Products grid
-          Expanded(
-            child: filteredProducts.when(
-              loading: () => const Center(
-                child: CircularProgressIndicator(),
-              ),
-              error: (error, stack) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Greeting
+              Padding(
+                padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 4.h),
+                child: Row(
                   children: [
-                    const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                    SizedBox(height: 12.h),
-                    Text(
-                      error.toString(),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 14.sp),
-                    ),
-                    SizedBox(height: 16.h),
-                    ElevatedButton(
-                      onPressed: () => ref.invalidate(productsProvider),
-                      child: const Text('Retry'),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Find your style ✨',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: Colors.white.withValues(alpha: 0.85),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-              data: (products) {
-                if (products.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'No products found',
-                      style: TextStyle(fontSize: 16.sp, color: Colors.grey),
-                    ),
-                  );
-                }
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    ref.invalidate(productsProvider);
-                  },
-                  child: GridView.builder(
-                    padding: EdgeInsets.all(12.w),
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.58,
-                      crossAxisSpacing: 12.w,
-                      mainAxisSpacing: 12.h,
-                    ),
-                    itemCount: products.length,
-                    itemBuilder: (context, index) {
-                      return _ProductCard(product: products[index]);
+              // Search bar
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.deepPurple.withValues(alpha: 0.15),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      ref.read(searchProductsProvider.notifier).searchProducts(value);
                     },
+                    decoration: InputDecoration(
+                      hintText: 'Search products...',
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade400,
+                        fontSize: 14.sp,
+                      ),
+                      prefixIcon: Icon(Icons.search_rounded, color: Colors.deepPurple.shade300, size: 22.sp),
+                      suffixIcon: _searchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: Icon(Icons.clear_rounded, color: Colors.grey.shade500),
+                              onPressed: () {
+                                _searchController.clear();
+                                ref.read(searchProductsProvider.notifier).searchProducts('');
+                              },
+                            )
+                          : null,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14.r),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: EdgeInsets.symmetric(vertical: 14.h),
+                    ),
                   ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-
-class _ProductCard extends ConsumerWidget {
-  final ProductEntity product;
-
-  const _ProductCard({required this.product});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isFav = ref.watch(favouriteProvider).contains(product.id);
-
-    return GestureDetector(
-      onTap: () => context.push(
-        '$productsViewPath/$productDetailsPath',
-        extra: product,
-      ),
-      child: Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.r),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(8.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Product image with favourite toggle
-            Expanded(
-              flex: 3,
-              child: Stack(
-                children: [
-                  Center(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8.r),
-                      child: Image.network(
-                        product.image,
-                        fit: BoxFit.contain,
-                        errorBuilder: (_, _, _) => const Icon(
-                          Icons.broken_image,
-                          size: 48,
-                          color: Colors.grey,
+                ),
+              ),
+              // Products grid
+              Expanded(
+                child: filteredProducts.when(
+                  loading: () => Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.deepPurple.shade200,
+                      strokeWidth: 3,
+                    ),
+                  ),
+                  error: (error, stack) => Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.error_outline_rounded, size: 48.sp, color: Colors.deepPurple.shade200),
+                        SizedBox(height: 12.h),
+                        Text(
+                          error.toString(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 14.sp, color: Colors.deepPurple.shade300),
                         ),
+                        SizedBox(height: 16.h),
+                        ElevatedButton.icon(
+                          onPressed: () => ref.invalidate(productsProvider),
+                          icon: const Icon(Icons.refresh_rounded),
+                          label: const Text('Retry'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF6750A4),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  data: (products) {
+                    if (products.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.search_off_rounded, size: 48.sp, color: Colors.deepPurple.shade200),
+                            SizedBox(height: 12.h),
+                            Text(
+                              'No products found',
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                color: Colors.deepPurple.shade300,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    return RefreshIndicator(
+                      color: const Color(0xFF6750A4),
+                      onRefresh: () async {
+                        ref.invalidate(productsProvider);
+                      },
+                      child: GridView.builder(
+                        padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.h),
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.6,
+                          crossAxisSpacing: 14.w,
+                          mainAxisSpacing: 16.h,
+                        ),
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          return ProductCard(product: products[index]);
+                        },
                       ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: () => ref
-                          .read(favouriteProvider.notifier)
-                          .toggleFavourite(product.id),
-                      child: Icon(
-                        isFav ? Icons.favorite : Icons.favorite_border,
-                        color: isFav ? Colors.red : Colors.grey,
-                        size: 22.sp,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 8.h),
-            // Title (max 2 lines)
-            Text(
-              product.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 13.sp,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(height: 4.h),
-            // Category
-            Text(
-              product.category,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 11.sp,
-                color: Colors.grey,
-              ),
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '\$${product.price.toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
+                    );
+                  },
                 ),
-                Row(
-                  children: [
-                    Icon(Icons.star, size: 14.sp, color: Colors.amber),
-                    SizedBox(width: 2.w),
-                    Text(
-                      product.rating.rate.toStringAsFixed(1),
-                      style: TextStyle(fontSize: 11.sp),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 }
