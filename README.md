@@ -22,13 +22,17 @@ A Flutter e-commerce application that displays products from the [Fake Store API
 
 <p style="text-align: center;">
   <img src="screenshots/home.png" width="180" alt="Home Screen" />
+  <span> &nbsp;&nbsp;&nbsp;&nbsp; </span>
   <img src="screenshots/product_details.png" width="180" alt="Product Details" />
+  <span> &nbsp;&nbsp;&nbsp;&nbsp; </span>
   <img src="screenshots/cart.png" width="180" alt="Cart Screen" />
 </p>
 
 <p style="text-align: center;">
   <img src="screenshots/checkout.png" width="180" alt="Checkout Screen" />
+  <span> &nbsp;&nbsp;&nbsp;&nbsp; </span>
   <img src="screenshots/order_summary.png" width="180" alt="Order Summary" />
+  <span> &nbsp;&nbsp;&nbsp;&nbsp; </span>
   <img src="screenshots/order_confirmation.png" width="180" alt="Order Confirmation" />
 </p>
 
