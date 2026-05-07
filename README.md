@@ -17,6 +17,19 @@ A Flutter e-commerce application that displays products from the [Fake Store API
 
 ---
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/home.png" width="200" alt="Home" />
+  <img src="screenshots/product_details.png" width="200" alt="Product Details" />
+  <img src="screenshots/cart.png" width="200" alt="Cart" />
+  <img src="screenshots/checkout.png" width="200" alt="Checkout" />
+  <img src="screenshots/order_summary.png" width="200" alt="Order Summary" />
+  <img src="screenshots/order_confirmation.png" width="200" alt="Order Confirmation" />
+</p>
+
+---
+
 ## Architecture
 
 The project follows **Clean Architecture** with clear separation of concerns across three layers:
