@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:meadowkart_task/features/carts/data/model/cart_model/cart_item_model.dart';
 import 'package:meadowkart_task/features/carts/presentation/provider/cart_provider.dart';
 
 class CartItemCard extends ConsumerWidget {
-  final CartItem item;
+  final CartItemModel item;
 
   const CartItemCard({required this.item});
 
