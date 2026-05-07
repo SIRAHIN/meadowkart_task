@@ -47,13 +47,16 @@ class CartItemCard extends ConsumerWidget {
                 color: const Color(0xFFF5F3FF),
                 borderRadius: BorderRadius.circular(12.r),
               ),
-              child: Image.network(
-                item.product.image,
-                fit: BoxFit.contain,
-                errorBuilder: (_, _, _) => Icon(
-                  Icons.image_not_supported_outlined,
-                  color: Colors.grey.shade400,
-                  size: 28.sp,
+              child: Hero(
+                tag: 'product-${item.product.id}',
+                child: Image.network(
+                  item.product.image,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, _, _) => Icon(
+                    Icons.image_not_supported_outlined,
+                    color: Colors.grey.shade400,
+                    size: 28.sp,
+                  ),
                 ),
               ),
             ),

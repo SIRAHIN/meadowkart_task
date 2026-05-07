@@ -83,13 +83,16 @@ class _CheckoutViewState extends ConsumerState<CheckoutView> {
                                         borderRadius:
                                             BorderRadius.circular(10.r),
                                       ),
-                                      child: Image.network(
-                                        item.product.image,
-                                        fit: BoxFit.contain,
-                                        errorBuilder: (_, _, _) => Icon(
-                                          Icons.image_not_supported_outlined,
-                                          color: Colors.grey.shade400,
-                                          size: 18.sp,
+                                      child: Hero(
+                                        tag: 'product-${item.product.id}',
+                                        child: Image.network(
+                                          item.product.image,
+                                          fit: BoxFit.contain,
+                                          errorBuilder: (_, _, _) => Icon(
+                                            Icons.image_not_supported_outlined,
+                                            color: Colors.grey.shade400,
+                                            size: 18.sp,
+                                          ),
                                         ),
                                       ),
                                     ),
