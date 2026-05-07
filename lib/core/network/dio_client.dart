@@ -1,3 +1,4 @@
+import 'package:awesome_dio_interceptor/awesome_dio_interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meadowkart_task/core/endpoints/api_endpoints.dart';
@@ -21,9 +22,10 @@ class DioClient {
           ),
         ) {
     dio.interceptors.add(
-      LogInterceptor(
-        requestBody: true,
-        responseBody: true,
+      AwesomeDioInterceptor(
+       logRequestHeaders: true,
+       logRequestTimeout: true,
+       logResponseHeaders: true,
       ),
     );
   }

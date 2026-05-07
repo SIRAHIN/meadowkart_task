@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:meadowkart_task/core/router/router_manager.dart';
 import 'package:meadowkart_task/features/carts/presentation/provider/cart_provider.dart';
+import 'package:meadowkart_task/features/carts/presentation/widget/cart_item.dart';
 
 class CartsView extends ConsumerWidget {
   const CartsView({super.key});
@@ -11,22 +12,46 @@ class CartsView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cart = ref.watch(cartProvider);
     final totalAmount = ref.read(cartProvider.notifier).totalAmount;
+    final itemCount = ref.read(cartProvider.notifier).itemCount;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Cart'),
-        centerTitle: true,
+        title: Text('My Cart${cart.isNotEmpty ? ' ($itemCount)' : ''}'),
       ),
       body: cart.isEmpty
           ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.shopping_cart_outlined, size: 64.sp, color: Colors.grey),
-                  SizedBox(height: 16.h),
+                  Container(
+                    width: 100.w,
+                    height: 100.h,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6750A4).withValues(alpha: 0.08),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.shopping_bag_outlined,
+                      size: 44.sp,
+                      color: const Color(0xFF6750A4).withValues(alpha: 0.5),
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
                   Text(
                     'Your cart is empty',
-                    style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  SizedBox(height: 6.h),
+                  Text(
+                    'Add items to get started',
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      color: Colors.grey.shade400,
+                    ),
                   ),
                 ],
               ),
@@ -34,26 +59,26 @@ class CartsView extends ConsumerWidget {
           : Column(
               children: [
                 Expanded(
-                  child: ListView.separated(
-                    padding: EdgeInsets.all(16.w),
-                    itemCount: cart.length,
-                    separatorBuilder: (_, __) => SizedBox(height: 12.h),
-                    itemBuilder: (context, index) {
-                      final item = cart[index];
-                      return _CartItemCard(item: item);
-                    },
+                  child: ListView(
+                    padding: EdgeInsets.fromLTRB(16.w, 16.w, 16.w, 8.w),
+                    children: [
+                      for (final item in cart) CartItemCard(item: item),
+                    ],
                   ),
                 ),
-                // Total + Checkout
+                // Bottom panel
                 Container(
-                  padding: EdgeInsets.all(16.w),
+                  padding: EdgeInsets.fromLTRB(20.w, 20.w, 20.w, 12.w),
                   decoration: BoxDecoration(
                     color: Colors.white,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(24.r),
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, -2),
+                        color: Colors.black.withValues(alpha: 0.06),
+                        blurRadius: 20,
+                        offset: const Offset(0, -4),
                       ),
                     ],
                   ),
@@ -61,40 +86,76 @@ class CartsView extends ConsumerWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        // Divider handle
+                        Container(
+                          width: 40.w,
+                          height: 4.h,
+                          margin: EdgeInsets.only(bottom: 16.h),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(2.r),
+                          ),
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Total (${ref.read(cartProvider.notifier).itemCount} items)',
-                              style: TextStyle(fontSize: 14.sp),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Total',
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    color: Colors.grey.shade500,
+                                  ),
+                                ),
+                                Text(
+                                  '$itemCount items',
+                                  style: TextStyle(
+                                    fontSize: 11.sp,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                ),
+                              ],
                             ),
                             Text(
                               '\$${totalAmount.toStringAsFixed(2)}',
                               style: TextStyle(
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green,
+                                fontSize: 24.sp,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFF6750A4),
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 12.h),
+                        SizedBox(height: 16.h),
                         SizedBox(
                           width: double.infinity,
+                          height: 52.h,
                           child: ElevatedButton(
-                            onPressed: () => RouteManager.router.pushNamed(checkoutName),
+                            onPressed: () =>
+                                RouteManager.router.pushNamed(checkoutName),
                             style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(vertical: 14.h),
+                              backgroundColor: const Color(0xFF6750A4),
+                              foregroundColor: Colors.white,
+                              elevation: 0,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12.r),
+                                borderRadius: BorderRadius.circular(14.r),
                               ),
                             ),
-                            child: Text(
-                              'Checkout',
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Checkout',
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                SizedBox(width: 8.w),
+                                Icon(Icons.arrow_forward_rounded, size: 20.sp),
+                              ],
                             ),
                           ),
                         ),
@@ -104,115 +165,6 @@ class CartsView extends ConsumerWidget {
                 ),
               ],
             ),
-    );
-  }
-}
-
-class _CartItemCard extends ConsumerWidget {
-  final CartItem item;
-
-  const _CartItemCard({required this.item});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Dismissible(
-      key: ValueKey(item.product.id),
-      direction: DismissDirection.endToStart,
-      onDismissed: (_) =>
-          ref.read(cartProvider.notifier).removeFromCart(item.product.id),
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: EdgeInsets.only(right: 20.w),
-        decoration: BoxDecoration(
-          color: Colors.red.shade100,
-          borderRadius: BorderRadius.circular(12.r),
-        ),
-        child: const Icon(Icons.delete, color: Colors.red),
-      ),
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(12.w),
-          child: Row(
-            children: [
-              // Product image
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8.r),
-                child: Image.network(
-                  item.product.image,
-                  width: 70.w,
-                  height: 70.h,
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, _, _) => const Icon(
-                    Icons.broken_image,
-                    color: Colors.grey,
-                  ),
-                ),
-              ),
-              SizedBox(width: 12.w),
-              // Title + Price
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.product.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(height: 4.h),
-                    Text(
-                      '\$${item.product.price.toStringAsFixed(2)}',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Quantity controls
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.remove, size: 18),
-                      onPressed: () => ref
-                          .read(cartProvider.notifier)
-                          .decreaseQuantity(item.product.id),
-                    ),
-                    Text(
-                      '${item.quantity}',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.add, size: 18),
-                      onPressed: () => ref
-                          .read(cartProvider.notifier)
-                          .increaseQuantity(item.product.id),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
