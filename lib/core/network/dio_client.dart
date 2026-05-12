@@ -26,6 +26,9 @@ class DioClient {
        logRequestHeaders: true,
        logRequestTimeout: true,
        logResponseHeaders: true,
+       logger: (log) {
+          print(log);
+       },
       ),
     );
   }

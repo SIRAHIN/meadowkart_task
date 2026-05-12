@@ -5,15 +5,17 @@ import 'package:go_router/go_router.dart';
 import 'package:meadowkart_task/core/router/router_manager.dart';
 import 'package:meadowkart_task/features/products/domain/entity/product_entity.dart';
 import 'package:meadowkart_task/features/products/presentation/provider/favourite_provider.dart';
+import 'package:meadowkart_task/features/products/presentation/provider/fetch_products_provider.dart';
 
 class ProductCard extends ConsumerWidget {
   final ProductEntity product;
+  final bool isFav;
 
-  const ProductCard({super.key, required this.product});
+  const ProductCard({super.key, required this.product, required this.isFav});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isFav = ref.watch(favouriteProvider).contains(product.id);
+    
 
     return GestureDetector(
       onTap: () => context.push(
@@ -134,8 +136,8 @@ class ProductCard extends ConsumerWidget {
                       right: 8.w,
                       child: GestureDetector(
                         onTap: () => ref
-                            .read(favouriteProvider.notifier)
-                            .toggleFavourite(product.id),
+                            .read(productsProvider.notifier)
+                            .toggleFavorite(product.id),
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 250),
                           curve: Curves.easeInOut,

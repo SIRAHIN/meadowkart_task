@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:meadowkart_task/features/carts/presentation/provider/cart_provider.dart';
 import 'package:meadowkart_task/features/products/domain/entity/product_entity.dart';
 import 'package:meadowkart_task/features/products/presentation/provider/favourite_provider.dart';
+import 'package:meadowkart_task/features/products/presentation/provider/fetch_products_provider.dart';
 
 class ProductsDetailsView extends ConsumerWidget {
   final ProductEntity product;
@@ -12,7 +13,7 @@ class ProductsDetailsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isFav = ref.watch(favouriteProvider).contains(product.id);
+    final isFav = ref.watch(productsProvider).asData?.value.favoriteProductIds.contains(product.id) ?? false;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -172,8 +173,8 @@ class ProductsDetailsView extends ConsumerWidget {
                         right: 12.w,
                         child: GestureDetector(
                           onTap: () => ref
-                              .read(favouriteProvider.notifier)
-                              .toggleFavourite(product.id),
+                              .read(productsProvider.notifier)
+                              .toggleFavorite(product.id),
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 250),
                             curve: Curves.easeInOut,

@@ -13,6 +13,7 @@ class ApiClient {
   ApiClient(this.dioClient);
 
   Future<Response> get(String path, {Map<String, dynamic>? queryParams}) {
+    print('GET Request: $path, Query Params: $queryParams');
     return dioClient.dio.get(path, queryParameters: queryParams);
   }
 

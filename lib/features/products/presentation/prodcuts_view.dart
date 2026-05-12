@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:meadowkart_task/core/router/router_manager.dart';
 import 'package:meadowkart_task/features/carts/presentation/provider/cart_provider.dart';
 import 'package:meadowkart_task/features/products/presentation/provider/fetch_products_provider.dart';
-import 'package:meadowkart_task/features/products/presentation/provider/search_products_provider.dart';
 import 'package:meadowkart_task/features/products/presentation/widget/product_card.dart';
 
 class ProductsView extends ConsumerStatefulWidget {
@@ -26,7 +25,7 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredProducts = ref.watch(searchProductsProvider);
+    final filteredProducts = ref.watch(productsProvider);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -132,7 +131,7 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
                   child: TextField(
                     controller: _searchController,
                     onChanged: (value) {
-                      ref.read(searchProductsProvider.notifier).searchProducts(value);
+                      ref.read(productsProvider.notifier).filterProducts(value);
                     },
                     decoration: InputDecoration(
                       hintText: 'Search products...',
@@ -146,7 +145,7 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
                               icon: Icon(Icons.clear_rounded, color: Colors.grey.shade500),
                               onPressed: () {
                                 _searchController.clear();
-                                ref.read(searchProductsProvider.notifier).searchProducts('');
+                                ref.read(productsProvider.notifier).filterProducts('');
                               },
                             )
                           : null,
@@ -198,7 +197,7 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
                     ),
                   ),
                   data: (products) {
-                    if (products.isEmpty) {
+                    if (products.filteredProducts.isEmpty) {
                       return Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -231,9 +230,9 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
                           crossAxisSpacing: 14.w,
                           mainAxisSpacing: 16.h,
                         ),
-                        itemCount: products.length,
+                        itemCount: products.filteredProducts.length,
                         itemBuilder: (context, index) {
-                          return ProductCard(product: products[index]);
+                          return ProductCard(product: products.filteredProducts[index], isFav: products.favoriteProductIds.contains(products.filteredProducts[index].id),);
                         },
                       ),
                     );
