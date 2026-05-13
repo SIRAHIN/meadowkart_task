@@ -13,8 +13,11 @@ class ProductsDetailsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isFav = ref.watch(productsProvider).asData?.value.favoriteProductIds.contains(product.id) ?? false;
+    // Watch favorite status for this product
+    final isFav = ref.watch(productsProvider).value?.favoriteProductIds.contains(product.id) ?? false;
 
+    // Alternative way to watch favorite status (if you want to handle loading/error states differently)
+    final isFav2 = ref.watch(productsProvider).asData?.value.favoriteProductIds.contains(product.id) ?? false;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(

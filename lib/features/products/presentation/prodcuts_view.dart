@@ -232,7 +232,7 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
                         ),
                         itemCount: products.filteredProducts.length,
                         itemBuilder: (context, index) {
-                          return ProductCard(product: products.filteredProducts[index], isFav: products.favoriteProductIds.contains(products.filteredProducts[index].id),);
+                          return ProductCard(product: products.filteredProducts[index],);
                         },
                       ),
                     );

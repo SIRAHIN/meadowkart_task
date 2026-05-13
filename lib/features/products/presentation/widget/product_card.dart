@@ -4,33 +4,25 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meadowkart_task/core/router/router_manager.dart';
 import 'package:meadowkart_task/features/products/domain/entity/product_entity.dart';
-import 'package:meadowkart_task/features/products/presentation/provider/favourite_provider.dart';
 import 'package:meadowkart_task/features/products/presentation/provider/fetch_products_provider.dart';
 
-class ProductCard extends ConsumerWidget {
+class ProductCard extends StatelessWidget {
   final ProductEntity product;
-  final bool isFav;
+ 
 
-  const ProductCard({super.key, required this.product, required this.isFav});
+  const ProductCard({super.key, required this.product});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    
-
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.push(
-        '$productsViewPath/$productDetailsPath',
-        extra: product,
-      ),
+      onTap: () =>
+          context.push('$productsViewPath/$productDetailsPath', extra: product),
       child: Container(
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Colors.white,
-              Color(0xFFFAF5FF),
-            ],
+            colors: [Colors.white, Color(0xFFFAF5FF)],
           ),
           borderRadius: BorderRadius.circular(18.r),
           boxShadow: [
@@ -116,7 +108,11 @@ class ProductCard extends ConsumerWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.star_rounded, size: 12.sp, color: Colors.white),
+                            Icon(
+                              Icons.star_rounded,
+                              size: 12.sp,
+                              color: Colors.white,
+                            ),
                             SizedBox(width: 2.w),
                             Text(
                               product.rating.rate.toStringAsFixed(1),
@@ -131,45 +127,62 @@ class ProductCard extends ConsumerWidget {
                       ),
                     ),
                     // Favourite button
-                    Positioned(
-                      top: 8.h,
-                      right: 8.w,
-                      child: GestureDetector(
-                        onTap: () => ref
-                            .read(productsProvider.notifier)
-                            .toggleFavorite(product.id),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.easeInOut,
-                          padding: EdgeInsets.all(6.w),
-                          decoration: BoxDecoration(
-                            gradient: isFav
-                                ? LinearGradient(
-                                    colors: [
-                                      Colors.pink.shade400,
-                                      Colors.red.shade400,
-                                    ],
-                                  )
-                                : null,
-                            color: isFav ? null : Colors.white.withValues(alpha: 0.9),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final isFav =
+                            ref
+                                .watch(productsProvider)
+                                .value
+                                ?.favoriteProductIds
+                                .contains(product.id) ??
+                            false;
+                        return Positioned(
+                          top: 8.h,
+                          right: 8.w,
+                          child: GestureDetector(
+                            onTap: () => ref
+                                .read(productsProvider.notifier)
+                                .toggleFavorite(product.id),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 250),
+                              curve: Curves.easeInOut,
+                              padding: EdgeInsets.all(6.w),
+                              decoration: BoxDecoration(
+                                gradient: isFav
+                                    ? LinearGradient(
+                                        colors: [
+                                          Colors.pink.shade400,
+                                          Colors.red.shade400,
+                                        ],
+                                      )
+                                    : null,
                                 color: isFav
-                                    ? Colors.pink.withValues(alpha: 0.3)
-                                    : Colors.black.withValues(alpha: 0.08),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
+                                    ? null
+                                    : Colors.white.withValues(alpha: 0.9),
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: isFav
+                                        ? Colors.pink.withValues(alpha: 0.3)
+                                        : Colors.black.withValues(alpha: 0.08),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
                               ),
-                            ],
+                              child: Icon(
+                                isFav
+                                    ? Icons.favorite
+                                    : Icons.favorite_border_rounded,
+                                color: isFav
+                                    ? Colors.white
+                                    : Colors.deepPurple.shade300,
+                                size: 15.sp,
+                              ),
+                            ),
                           ),
-                          child: Icon(
-                            isFav ? Icons.favorite : Icons.favorite_border_rounded,
-                            color: isFav ? Colors.white : Colors.deepPurple.shade300,
-                            size: 15.sp,
-                          ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -246,15 +259,14 @@ class ProductCard extends ConsumerWidget {
                             padding: EdgeInsets.all(6.r),
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xFF7E57C2),
-                                  Color(0xFF6750A4),
-                                ],
+                                colors: [Color(0xFF7E57C2), Color(0xFF6750A4)],
                               ),
                               borderRadius: BorderRadius.circular(10.r),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF6750A4).withValues(alpha: 0.3),
+                                  color: const Color(
+                                    0xFF6750A4,
+                                  ).withValues(alpha: 0.3),
                                   blurRadius: 8,
                                   offset: const Offset(0, 3),
                                 ),
