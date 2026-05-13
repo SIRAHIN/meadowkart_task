@@ -8,7 +8,6 @@ import 'package:meadowkart_task/features/products/presentation/provider/fetch_pr
 
 class ProductCard extends StatelessWidget {
   final ProductEntity product;
- 
 
   const ProductCard({super.key, required this.product});
 
@@ -129,13 +128,20 @@ class ProductCard extends StatelessWidget {
                     // Favourite button
                     Consumer(
                       builder: (context, ref, child) {
-                        final isFav =
-                            ref
-                                .watch(productsProvider)
-                                .value
-                                ?.favoriteProductIds
-                                .contains(product.id) ??
-                            false;
+                        // By using select, it will only
+                        // rebuild for if the favorite product ids list
+                        // changes in a way that affects this product's favorite status,
+                        // rather than rebuilding for any change in the products state.
+                        final isFav = ref.watch(
+                          productsProvider.select(
+                            (state) =>
+                                state.value?.favoriteProductIds.contains(
+                                  product.id,
+                                ) ??
+                                false,
+                          ),
+                        );
+
                         return Positioned(
                           top: 8.h,
                           right: 8.w,
