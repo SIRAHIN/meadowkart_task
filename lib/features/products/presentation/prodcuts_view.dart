@@ -32,7 +32,28 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
       appBar: AppBar(
         title: const Text('Discover'),
         centerTitle: true,
+        
         actions: [
+           DropdownButton(
+            value: ref.watch(productsProvider).asData?.value.dropdownValue ?? 'all',
+             underline: const SizedBox.shrink(),
+             icon: Icon(Icons.more_vert, color: Colors.white, size: 22.sp),
+            items: const [
+          DropdownMenuItem(
+            value: 'all',
+            child: Text('All'),
+          ),
+          DropdownMenuItem(
+            value: 'men',
+            child: Text('Men'),
+          ),
+          DropdownMenuItem(
+            value: 'women',
+            child: Text('Women'),
+          ),
+        ], onChanged: (value) {
+          ref.read(productsProvider.notifier).filterProductsByCategory(value!);
+        }),
           Stack(
             children: [
               IconButton(
@@ -72,6 +93,7 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
             ],
           ),
         ],
+
       ),
       body: Container(
         decoration: const BoxDecoration(

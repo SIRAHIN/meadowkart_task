@@ -35,7 +35,7 @@ class FetchProductsProvider extends AsyncNotifier<ProductsState> {
 
     final result = await ref.read(fetchProductsUsecaseProvider).call();
 
-    final favoriteDb =  ref.read(productLocalDataSourceProvider);
+    final favoriteDb = ref.read(productLocalDataSourceProvider);
 
     final favoriteProductIds = favoriteDb
         .getFavouriteProducts()
@@ -74,8 +74,16 @@ class FetchProductsProvider extends AsyncNotifier<ProductsState> {
 
     if (currentState == null) return;
 
-    // If the search query is empty, show all products
+    // If the search query is empty
     if (query.isEmpty) {
+
+      // If there's a category filter applied, re-apply it to show the filtered products
+      if(currentState.dropdownValue != null && currentState.dropdownValue != 'all'){
+        filterProductsByCategory(currentState.dropdownValue!);
+        return;
+      }
+
+      // If there's no category filter, show all products
       state = AsyncData(
         currentState.copyWith(filteredProducts: currentState.products),
       );
@@ -107,6 +115,31 @@ class FetchProductsProvider extends AsyncNotifier<ProductsState> {
 
     state = AsyncData(
       currentState.copyWith(favoriteProductIds: getUpdatedFavorites),
+    );
+  }
+
+  // filter products by dropdown category
+  void filterProductsByCategory(String category) {
+    final currentState = state.value;
+
+    if (currentState == null) return;
+
+    // If the selected category is 'All', show all products
+    if(category == 'all'){
+      state = AsyncData(
+        currentState.copyWith(filteredProducts: currentState.products, dropdownValue: category),
+      );
+      return;
+    }
+
+    // If the selected category is not 'All', filter the products
+    final filtered = currentState.products.where((product) {
+      return product.category.toLowerCase() == category.toLowerCase() || 
+          product.title.toLowerCase().contains(category.toLowerCase());
+    }).toList();
+
+    state = AsyncData(
+      currentState.copyWith(filteredProducts: filtered , dropdownValue: category),
     );
   }
 }
