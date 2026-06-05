@@ -4,5 +4,5 @@ class ApiEndpoints {
   static const String baseUrl = "https://fakestoreapi.com";
 
    // get all products
-  static const String getProducts = "/products";
+  static const String getProducts = "/productss";
 }

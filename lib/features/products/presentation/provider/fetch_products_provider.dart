@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meadowkart_task/features/products/data/datasource/product_local_data_soruce/product_local_data_source.dart';
 import 'package:meadowkart_task/features/products/data/model/product_favourite_model/product_favourite_model.dart';
@@ -8,6 +9,8 @@ import 'package:meadowkart_task/features/products/presentation/provider/products
 
 final productsProvider =
     AsyncNotifierProvider<FetchProductsProvider, ProductsState>(
+      retry: (retryCount, error) => null,
+      //isAutoDispose: true,
       FetchProductsProvider.new,
     );
 
@@ -42,30 +45,20 @@ class FetchProductsProvider extends AsyncNotifier<ProductsState> {
         .map((e) => e.productId)
         .toList();
 
-    result.fold(
+    return result.fold(
       (error) {
-        state = AsyncError(
-          error.message ?? 'Failed to fetch products',
-          StackTrace.current,
-        );
+        print("Thsi is Error $error");
+        state = AsyncValue.error(error, StackTrace.current);
+        throw error.message.toString();
       },
       (products) {
-        state = AsyncData(
-          ProductsState(
-            products: products,
-            filteredProducts: products,
-            favoriteProductIds: favoriteProductIds,
-          ),
+        return ProductsState(
+          products: products,
+          filteredProducts: products,
+          favoriteProductIds: favoriteProductIds,
         );
       },
     );
-
-    return state.value ??
-        ProductsState(
-          products: [],
-          filteredProducts: [],
-          favoriteProductIds: [],
-        );
   }
 
   // Filter products by name
@@ -76,9 +69,9 @@ class FetchProductsProvider extends AsyncNotifier<ProductsState> {
 
     // If the search query is empty
     if (query.isEmpty) {
-
       // If there's a category filter applied, re-apply it to show the filtered products
-      if(currentState.dropdownValue != null && currentState.dropdownValue != 'all'){
+      if (currentState.dropdownValue != null &&
+          currentState.dropdownValue != 'all') {
         filterProductsByCategory(currentState.dropdownValue!);
         return;
       }
@@ -125,21 +118,27 @@ class FetchProductsProvider extends AsyncNotifier<ProductsState> {
     if (currentState == null) return;
 
     // If the selected category is 'All', show all products
-    if(category == 'all'){
+    if (category == 'all') {
       state = AsyncData(
-        currentState.copyWith(filteredProducts: currentState.products, dropdownValue: category),
+        currentState.copyWith(
+          filteredProducts: currentState.products,
+          dropdownValue: category,
+        ),
       );
       return;
     }
 
     // If the selected category is not 'All', filter the products
     final filtered = currentState.products.where((product) {
-      return product.category.toLowerCase() == category.toLowerCase() || 
+      return product.category.toLowerCase() == category.toLowerCase() ||
           product.title.toLowerCase().contains(category.toLowerCase());
     }).toList();
 
     state = AsyncData(
-      currentState.copyWith(filteredProducts: filtered , dropdownValue: category),
+      currentState.copyWith(
+        filteredProducts: filtered,
+        dropdownValue: category,
+      ),
     );
   }
 }
