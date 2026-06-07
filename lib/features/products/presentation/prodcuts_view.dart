@@ -204,7 +204,7 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
                         ),
                         SizedBox(height: 16.h),
                         ElevatedButton.icon(
-                          onPressed: () => ref.invalidate(productsProvider),
+                          onPressed: () => ref.read(productsProvider.notifier).retryProducts(),
                           icon: const Icon(Icons.refresh_rounded),
                           label: const Text('Retry'),
                           style: ElevatedButton.styleFrom(

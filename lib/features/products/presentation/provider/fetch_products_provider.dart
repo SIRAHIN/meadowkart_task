@@ -34,7 +34,7 @@ class FetchProductsProvider extends AsyncNotifier<ProductsState> {
 
   // Fetch Products
   Future<ProductsState> fetchProducts() async {
-    state = AsyncLoading();
+    //state = AsyncLoading();
 
     final result = await ref.read(fetchProductsUsecaseProvider).call();
 
@@ -48,7 +48,7 @@ class FetchProductsProvider extends AsyncNotifier<ProductsState> {
     return result.fold(
       (error) {
         print("Thsi is Error $error");
-        state = AsyncValue.error(error, StackTrace.current);
+        //state = AsyncValue.error(error.message.toString(), StackTrace.current);
         throw error.message.toString();
       },
       (products) {
@@ -140,5 +140,14 @@ class FetchProductsProvider extends AsyncNotifier<ProductsState> {
         dropdownValue: category,
       ),
     );
+  }
+
+  // Future<void> refreshProducts() async {
+  //   state = await AsyncValue.guard(() => fetchProducts());
+  // }
+
+  Future<void> retryProducts() async {
+    state = AsyncLoading();
+    state = await AsyncValue.guard(() => fetchProducts());
   }
 }
